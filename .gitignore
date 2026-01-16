@@ -1,0 +1,36 @@
+# --- LaTeX Build Files (これらはゴミだ) ---
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.dvi
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+
+# --- VS Code & Editor Files ---
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.history
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
+
+# --- PDF (成果物) ---
+# ※ PDFも管理したい場合は、行頭に # をつけてコメントアウトせよ
+#*.pdf
