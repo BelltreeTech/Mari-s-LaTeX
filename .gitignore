@@ -32,5 +32,11 @@
 Thumbs.db
 
 # --- PDF (成果物) ---
-# ※ PDFも管理したい場合は、行頭に # をつけてコメントアウトせよ
-#*.pdf
+# Files_PDFs フォルダの中身（PDF以外）を無視
+Files_PDFs/*
+!Files_PDFs/*.pdf
+
+# Files_TEXs フォルダの中にはゴミはできないはずだが念のため
+Files_TEXs/*.aux
+Files_TEXs/*.log
+# ... (その他の拡張子)
