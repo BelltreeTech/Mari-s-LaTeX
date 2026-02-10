@@ -1,23 +1,99 @@
-\documentclass[uplatex, dvipdfmx]{jsarticle}
-\usepackage{amsmath}
-\title{慶應SFC}
-\author{Shinri Suzuki / 鈴木 真理}
-\date{\today}
+\documentclass[a4paper,11pt]{jsarticle}
+
+% === パッケージの召喚 ===
+\usepackage[dvipdfmx]{graphicx} % 画像埋め込み
+\usepackage{amsmath, amssymb}   % 数式・記号
+\usepackage{url}                % URL表示
+\usepackage{bm}                 % ベクトル太字
+\usepackage{ascmac}             % 枠線など
+\usepackage{here}               % 画像の強制配置
+
+% === 設定 ===
+\title{\textbf{深層学習の数理的・技術的基盤の構築}\\ \large 〜ブラックボックスからの脱却〜}
+\author{総合政策学部 2026年度入学者：鈴木 真理}
+\date{2026年3月 吉日}
 
 \begin{document}
 
 \maketitle
 
-\section{Introduction}
-\textbf{Hello World!} Today I am learning \LaTeX.
-\LaTeX{} is a great program for writing math.
+% === 概要 (Abstract) ===
+\begin{abstract}
+% TODO: 全体の要約を書く（最後に書くのが定石だが、指針として仮置きしてもよい）
+本課題において、筆者は医療用AI「Polaris」の実装に向け、深層学習（Deep Learning）のブラックボックス性を解消するための数理的・技術的基盤の構築を行った。既存のAPIやライブラリに依存せず、PythonとNumPyのみを用いてニューラルネットワークをゼロから実装することで、その内部動作を完全に掌握することを目的とした。本稿では、1月から2月にかけての学習成果、特に誤差逆伝播法の数理的導出と実装プロセスについて詳述し、3月に向けた自然言語処理（NLP）への応用計画を示す。
+\end{abstract}
 
-\section{Mathematics}
-I can write inline math such as $a^2+b^2=c^2$.
+% === 本論 ===
 
-I can also give equations their own space:
+\section{序論：なぜ「車輪の再発明」が必要か}
+
+\subsection{背景：医療AI「Polaris」の課題}
+% TODO: AO入試で提案したPolarisについて。API依存の現状と、医療現場で求められる「安全性」「説明責任」のギャップについて記述せよ。
+% キーワード: Black Box, Accountability, Medical AI
+
+
+\subsection{目的：ブラックボックスからの脱却}
+% TODO: 本課題のゴール設定。「動けばいい」ではなく「内部構造を数学的に説明できる」状態を目指す旨を宣言せよ。
+
+
+\section{数理的基盤の習得（1月の成果）}
+
+\subsection{線形代数と計算グラフの接続}
+% TODO: 行列演算（Dot Product）が、NNにおいてどのような意味（空間変換）を持つか。
+% TODO: パーセプトロンの限界と、多層化・非線形化（活性化関数）の意味について。
+
+
+\subsection{微分積分と最適化の視覚化}
+% TODO: 勾配降下法の仕組み。「山を下る」直感と、数式(W = W - lr * dW)のリンク。
+% TODO: なぜ数値微分ではなく、解析的な微分（誤差逆伝播）が必要なのか？
+
+
+\section{ゼロからの実装と技術的獲得（2月の成果）}
+\label{sec:implementation}
+
+\subsection{NumPyによる完全実装}
+% TODO: PyTorch禁止縛りの意義。
+% TODO: 技術的詳細（ブロードキャスト、ベクトル化による高速化など）を具体的に。
+
+
+\subsection{誤差逆伝播法（Backpropagation）の導出}
+% TODO: 連鎖律（Chain Rule）の理解。
+% TODO: 以下の数式が何を意味しているか、自分の言葉で解説せよ。
+計算グラフを用いた連鎖律（Chain Rule）の理解により、複雑な微分の導出が可能となった。例えば、Affineレイヤの逆伝播は以下のように定式化される。
+
 \begin{equation}
-\gamma^2+\theta^2=\omega^2.
+    \frac{\partial L}{\partial \bm{X}} = \frac{\partial L}{\partial \bm{Y}} \cdot \bm{W}^{\mathrm{T}}
 \end{equation}
+
+% TODO: ここに解説を書く（行列の形状チェック、転置の意味など）。
+
+
+\section{成果と考察}
+
+\subsection{MNISTデータセットによる検証}
+% TODO: 定量的な成果（精度XX%）。
+% TODO: 学習曲線（Lossの推移）についての考察（過学習は起きたか？など）。
+
+
+\subsection{ブラックボックスは解消されたか}
+% TODO: 定性的な成果。マインドセットの変化。「魔法」が「数理」に変わった実感。
+
+
+\section{今後の展望：3月の計画}
+
+\subsection{CNNからRNN/LSTMへ}
+% TODO: 画像（空間的なパターン）から時系列（時間的なパターン）への拡張計画。
+
+
+\subsection{自然言語処理とTransformerへの挑戦}
+% TODO: Polaris（対話型AI）への接続。Attention機構の理解と、LLMアーキテクチャ設計への意欲。
+
+
+% === 参考文献 ===
+\begin{thebibliography}{99}
+    \bibitem{saito1} 斎藤康毅『ゼロから作るDeep Learning ―Pythonで学ぶディープラーニングの理論と実装』オライリー・ジャパン, 2016.
+    \bibitem{goodfellow} Ian Goodfellow et al., \textit{Deep Learning}, MIT Press, 2016.
+    \bibitem{saito2} 斎藤康毅『ゼロから作るDeep Learning ② ―自然言語処理編』オライリー・ジャパン, 2018.
+\end{thebibliography}
 
 \end{document}
