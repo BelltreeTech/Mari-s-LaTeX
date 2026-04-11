@@ -1,0 +1,129 @@
+\documentclass[uplatex, dvipdfmx, a4paper, 11pt]{jsarticle}
+
+\usepackage[top=25truemm,bottom=25truemm,left=25truemm,right=25truemm]{geometry}
+\usepackage{amsmath, amssymb, mathtools, bm}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage[dvipdfmx, bookmarks=true, setpagesize=false, colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black]{hyperref}
+\usepackage{pxjahyper}
+\usepackage{listings} 
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single
+}
+\lstset{style=mystyle}
+
+\usetikzlibrary{positioning, arrows.meta, calc}
+
+\title{データサイエンス関連ツールの利用実態とスキルレベルに関する調査報告\\ \large 2026年度春学期 受講生アンケートデータの分析}
+\author{
+    慶應義塾大学 総合政策学部 / 環境情報学部 \\[3mm]
+    \begin{tabular}{ll}
+        学籍番号: 72603857 & 氏名: 鈴木 真理 \\
+    \end{tabular}
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    本稿では、2026年度春学期の講義受講生912名を対象に実施されたアンケートデータをもとに、学生のデータサイエンス関連ツールおよびプログラミング言語の利用スキルに関する現状を分析した。分析の結果、受講生におけるPythonの経験者（初心者レベル以上）の割合は約85\%に達しており、従来の一般的な表計算ツールであるExcel分析ツールの経験割合を上回っていることが明らかになった。また、SFCの2学部間で比較したところ、総合政策学部の学生の方が環境情報学部の学生よりもPython経験者の割合がやや高いという興味深い傾向も確認された。本分析結果は、今後のデータサイエンス講義のカリキュラム設計において有用な基礎資料となる。
+\end{abstract}
+
+\vfill
+\clearpage
+
+\section{はじめに}
+近年、データサイエンスおよびプログラミングスキルの重要性が急速に高まっており、大学教育においても文系・理系を問わずリテラシー教育が推進されている。講義を効果的に進行するためには、受講生がどのようなツールに慣れ親しんでおり、どの程度の事前知識を有しているかを把握することが不可欠である。本稿の目的は、2026年度春学期の受講生に対して実施されたアンケートデータを集計・分析し、各ツールのスキルレベルの実態と学部間の傾向を明らかにすることである。
+
+\section{関連研究}
+大学における情報リテラシー教育の変遷に関する研究は数多く行われている。特に近年のトレンドとして、従来のExcel等のGUIツール中心の教育から、PythonやRといったプログラミング言語を用いたデータ処理教育への移行が挙げられる。SFC（慶應義塾大学 総合政策学部・環境情報学部）においても「情報基礎」をはじめとするプログラミング教育が必修化されており、学生のスキルのベースラインは年々上昇していると考えられる。本研究は、最新のアンケートデータを用いてその定量的裏付けを行うものである。
+
+\section{分析手法およびデータ概要}
+本分析には、「2026s 第一回講義課題用データ.csv」を用いた。本データには全912件のレコードが含まれている。回答者の主な属性を分析した結果、所属学部は環境情報学部が508名、総合政策学部が385名と大半を占めていた。また、学年構成としては2年生が359名、1年生が330名と、低学年が全体の約75\%を占めている。
+
+データの集計にはPythonのデータ分析ライブラリである \texttt{pandas} を用いた。各ツールのスキルレベルは「5. 未経験」「4. 初心者レベル」「3. 中級者レベル」「2. 上級者レベル」「1. 達人レベル」などのカテゴリカルデータとして記録されており、本稿では主に「未経験」と「初心者レベル以上（経験者）」の二値に分類して集計を行った。
+
+\section{実験および評価}
+
+\subsection{各ツールの未経験者割合の比較}
+はじめに、各データサイエンスツールにおける「未経験者」の割合を算出した。表\ref{tab:unexperienced}に、ツールごとの未経験者数とその割合を示す。
+
+\begin{table}[H]
+    \centering
+    \caption{各ツールの未経験者数および割合（回答者全体: 912名）}
+    \label{tab:unexperienced}
+    \begin{tabular}{lrr}
+        \toprule
+        ツール名              & 未経験者数 & 割合 (\%) \\
+        \midrule
+        Python            & 136   & 14.9    \\
+        Excel分析ツール        & 180   & 19.7    \\
+        その他プログラミング        & 442   & 48.5    \\
+        R                 & 503   & 55.2    \\
+        Excel Pivot Table & 525   & 57.6    \\
+        SQL               & 687   & 75.3    \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+表\ref{tab:unexperienced}から明らかなように、Pythonの未経験者は全体のわずか14.9\%にとどまっており、Excel分析ツール（19.7\%）を凌いで最も広く経験されているツールとなっている。一方で、SQL（75.3\%）やR（55.2\%）、Excel Pivot Table（57.6\%）などは依然として過半数の学生が未経験であることがわかる。
+
+\subsection{学部間におけるPythonスキルの比較}
+次に、受講生の大半を占めるSFCの2学部（総合政策学部、環境情報学部）間で、Pythonの経験割合に違いがあるかを検証した。表\ref{tab:faculty_python}にその結果を示す。
+
+\begin{table}[H]
+    \centering
+    \caption{SFC2学部におけるPython経験者（初心者レベル以上）の割合}
+    \label{tab:faculty_python}
+    \begin{tabular}{lrrr}
+        \toprule
+        学部     & 学生数 & 経験者数 & 経験者割合 (\%) \\
+        \midrule
+        総合政策学部 & 385 & 339  & 88.1       \\
+        環境情報学部 & 508 & 426  & 83.9       \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+一般的なイメージとは裏腹に、総合政策学部（88.1\%）の方が環境情報学部（83.9\%）よりも、Pythonの経験者の割合がわずかに高い結果となった。これは、文系・理系といった旧来の枠組みに捉われず、SFC全体として均質かつ高度な情報教育が浸透していることを示唆している。
+
+\section{おわりに}
+本調査報告では、912名の受講生アンケートデータをもとに、各種データサイエンスツールのスキルレベルを分析した。その結果、受講生の約85\%がPythonの基礎的な利用経験を有しており、SFCにおいてはPythonが事実上の共通言語として機能し始めていることが確認された。
+今後の展望として、講義カリキュラムにおいてはPythonの基礎文法を教える段階から一歩進み、未経験者が多いSQLを用いたデータベース操作や、実務的なデータハンドリング手法（\texttt{pandas}等の活用）に重点を置くことが、より高い教育効果をもたらすと考えられる。
+
+\begin{thebibliography}{99}
+    \bibitem{pandas_doc}
+    Wes McKinney. Data Structures for Statistical Computing in Python, Proceedings of the 9th Python in Science Conference, 51-56, 2010.
+\end{thebibliography}
+
+\end{document}
