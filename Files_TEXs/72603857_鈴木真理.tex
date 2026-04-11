@@ -47,16 +47,15 @@
 
 \makeatletter
 \renewcommand{\section}{\@startsection{section}{1}{\z@}%
-  {0.5\Cvs \@plus.15\Cvs \@minus.05\Cvs}%
-  {0.1\Cvs \@plus.05\Cvs}%
-  {\normalfont\large\headfont\raggedright}}
+    {0.5\Cvs \@plus.15\Cvs \@minus.05\Cvs}%
+    {0.1\Cvs \@plus.05\Cvs}%
+    {\normalfont\large\headfont\raggedright}}
 \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-  {0.3\Cvs \@plus.1\Cvs \@minus.05\Cvs}%
-  {0.05\Cvs \@plus.03\Cvs}%
-  {\normalfont\normalsize\headfont\raggedright}}
+    {0.3\Cvs \@plus.1\Cvs \@minus.05\Cvs}%
+    {0.05\Cvs \@plus.03\Cvs}{\normalfont\normalsize\headfont\raggedright}}
 \makeatother
 
-\title{\vspace{-10mm}データサイエンス 第一回講義課題\\ \normalsize 履修者アンケートの定量的分析 By 鈴木真理\vspace{2mm}\\ \normalsize 履修者アンケートの定量分析By Gemini\vspace{2mm}}
+\title{\vspace{-10mm}データドリブン 第一回講義課題\\ \normalsize 履修者アンケートの定量的分析 By 鈴木真理\vspace{1mm}\\ \normalsize 履修者アンケートの定量分析By Gemini\vspace{1mm}}
 \author{\small 慶應義塾大学 総合政策学部\quad 学籍番号: 72603857\quad 鈴木 真理}
 \date{\small \today}
 
@@ -79,8 +78,8 @@
 
     \begin{enumerate}[label=\textbf{\arabic*.}, nosep, leftmargin=2em]
         \item Python・SQL・R間に正の相関がある．
-        \item 環境と総合の間にスキル差がある．
-        \item 性別間ではスキルに差がある．
+        \item 学部間でスキル差がある．
+        \item 性別間でスキル差がある．
     \end{enumerate}
     \vspace{1em}
     \noindent \textbf{結果：} 仮説1と仮説3が支持された．
@@ -127,21 +126,23 @@
 \section{両者の比較と「つまらない分析」の正体}
 \point{1. 分析結果の共通点}{
     \begin{itemize}[nosep]
-        \hypo{Python経験者の割合が高い（筆者: 2.22 vs Gemini: 85\%）}
-        \hypo{学部間のスキル差が実質的に無視可能である点}
+        \hypo{Python経験者の割合が高い}
+        \hypo{学部間のスキル差がない}
     \end{itemize}
 }
 
 \noindent\textbf{2. なぜ「つまらない」のか（考察）：}
 \begin{itemize}
-    \item \textbf{平均値の罠：}
-    \item \textbf{因果の欠如：}
+    \item \textbf{情報不足:}学生の学修環境や動機などの要素が考慮されていないため，スキルの背景にある要因を分析できない．
+    \item \textbf{客観性がない:}本調査は主観的な評価に偏っているため，分析結果が個人の感覚に依存しやすく信憑性に欠ける．
+    \item \textbf{前後比較が不能である:}初回授業という単一時点のデータのみであるため，スキルの成長や変化を追跡できない．
+    \item \textbf{一定のバイアスがある:}履修選抜を突破できる学生が対象であるため，全体のスキル分布を正確に反映できない．
 \end{itemize}
 
 \section{意味合い（Insight）を出すための新たな問い}
-現状を追認するだけの分析から脱却するため，以下の問いを設定する．
+現状を把握するだけの分析から脱却するため，以下の問いを設定する．
 \begin{enumerate}
-    \item \textbf{クラスター特性：} 「Excelは得意だがPGは1」という層と「PGは得意だがExcelは1」という層の学習障壁は，教育設計においてどう区別されるべきか？
+    \item \textbf{クラスター特性：} 個人によって
     \item \textbf{潜在的脱落者の予測：} 数学への苦手意識（1-2）とプログラミング経験の低さが結合している層に対し，どのタイミングで介入（スキャフォールディング）すべきか？
 \end{enumerate}
 
