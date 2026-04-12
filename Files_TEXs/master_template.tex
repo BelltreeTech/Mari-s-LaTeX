@@ -1,0 +1,741 @@
+%% =====================================================================
+%%  【決定版】万能マスターテンプレート — 北米大学院・学術論文水準
+%%  Author : 鈴木 真理  (72603857)
+%%  Engine : uplatex + dvipdfmx + biber
+%%  Build  :
+%%    uplatex  master_template.tex
+%%    biber    master_template
+%%    uplatex  master_template.tex
+%%    uplatex  master_template.tex
+%%    dvipdfmx master_template.dvi
+%%  Note   : コンパイルするだけで「LaTeX の百科事典」として機能する
+%% =====================================================================
+
+\documentclass[uplatex, dvipdfmx, a4paper, 10pt]{jsarticle}
+
+%% =========================  パッケージ  =============================
+\usepackage[top=15truemm,bottom=15truemm,left=18truemm,right=18truemm]{geometry}
+\usepackage{amsmath, amssymb, mathtools, bm}        % 数式
+\usepackage[dvipdfmx]{graphicx}                      % 画像
+\usepackage{float}                                   % [H] 指定
+\usepackage{booktabs}                                % 学術誌水準の表
+\usepackage{caption}                                 % キャプション微調整
+\usepackage{listings}                                % ソースコード
+\usepackage{xcolor}                                  % 色定義
+\usepackage{tabularx}                                % 可変幅テーブル
+\usepackage{enumitem}                                % リスト微調整
+\usepackage{multicol}                                % 段組み
+\usepackage{lastpage}                                % 総ページ数参照
+\usepackage{fancyhdr}                                % ヘッダー・フッター
+
+%% ---- 五つの秘宝 ----
+\usepackage{tikz}                                    % 秘宝1: 図形描画
+\usepackage[ruled, vlined, linesnumbered]{algorithm2e} % 秘宝2: 擬似コード
+\usepackage{tcolorbox}                               % 秘宝3: 装飾枠
+\tcbuselibrary{skins, breakable}
+
+%% ---- 参考文献管理 (BibLaTeX + Biber) ----
+\usepackage[backend=biber, style=numeric-comp, sorting=none,
+            maxbibnames=99]{biblatex}
+\addbibresource{references.bib}
+
+%% ---- Hyperref（順番注意：cleveref・glossaries より前） ----
+\usepackage[dvipdfmx, bookmarks=true,
+            setpagesize=false,
+            colorlinks=true, linkcolor=black,
+            urlcolor=blue, citecolor=black]{hyperref}
+\usepackage{pxjahyper}                               % hyperref 日本語対応
+
+%% ---- 秘宝4: Cleveref（hyperref の後に読み込むこと） ----
+\usepackage[nameinlink]{cleveref}
+% 日本語ラベル名の設定
+\crefname{equation}{式}{式}
+\Crefname{equation}{式}{式}
+\crefname{figure}{図}{図}
+\Crefname{figure}{図}{図}
+\crefname{table}{表}{表}
+\Crefname{table}{表}{表}
+\crefname{section}{§}{§}
+\Crefname{section}{§}{§}
+\crefname{listing}{リスト}{リスト}
+\Crefname{listing}{リスト}{リスト}
+\crefname{algocf}{Algorithm}{Algorithm}
+\Crefname{algocf}{Algorithm}{Algorithm}
+% 括弧付き数式参照のフォーマット
+\crefformat{equation}{式~(#2#1#3)}
+\crefrangeformat{equation}{式~(#3#1#4)–(#5#2#6)}
+\crefmultiformat{equation}{式~(#2#1#3)}{と(#2#1#3)}{, (#2#1#3)}{, (#2#1#3)}
+
+%% ---- 秘宝5: 略語管理（Acronym System） ----
+%% glossaries パッケージは uplatex の datatool-utf8 と非互換のため，
+%% 同等機能を軽量マクロで実装する．
+%% 使い方: \newacronym{key}{SHORT}{Long Form}
+%%         \gls{key}  → 初回: Long Form (SHORT)  / 2回目以降: SHORT
+%%         \glsreset{key}  → フラグをリセット（再度フルスペルにする）
+
+\makeatletter
+\def\@acro@true{T}
+\def\@acro@false{F}
+% --- \newacronym{key}{SHORT}{Long Form} ---
+\newcommand{\newacronym}[3]{%
+    \expandafter\def\csname @acro@flag@#1\endcsname{\@acro@false}%
+    \expandafter\def\csname @acro@short@#1\endcsname{#2}%
+    \expandafter\def\csname @acro@long@#1\endcsname{#3}%
+    \g@addto@macro\@acro@list{\@acro@printentry{#1}}%
+}
+\let\@acro@list\@empty
+% --- \gls{key} ---
+\newcommand{\gls}[1]{%
+    \expandafter\ifx\csname @acro@flag@#1\endcsname\@acro@true
+        \csname @acro@short@#1\endcsname
+    \else
+        \csname @acro@long@#1\endcsname
+        \ (\csname @acro@short@#1\endcsname)%
+        \expandafter\gdef\csname @acro@flag@#1\endcsname{\@acro@true}%
+    \fi
+}
+% --- \glsreset{key} ---
+\newcommand{\glsreset}[1]{%
+    \expandafter\gdef\csname @acro@flag@#1\endcsname{\@acro@false}%
+}
+% --- \printacronyms → 略語一覧を表形式で出力 ---
+\newcommand{\@acro@printentry}[1]{%
+    \csname @acro@short@#1\endcsname &
+    \csname @acro@long@#1\endcsname \\
+}
+\newcommand{\printacronyms}[1][略語一覧]{%
+    \subsection*{#1}%
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{略語} & \textbf{正式名称} \\
+        \midrule
+        \@acro@list
+        \bottomrule
+    \end{tabular}%
+}
+\makeatother
+
+% ---- 略語定義 ----
+\newacronym{llm}{LLM}{Large Language Model}
+\newacronym{rag}{RAG}{Retrieval-Augmented Generation}
+\newacronym{gan}{GAN}{Generative Adversarial Network}
+\newacronym{nlp}{NLP}{Natural Language Processing}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{cnn}{CNN}{Convolutional Neural Network}
+\newacronym{rnn}{RNN}{Recurrent Neural Network}
+\newacronym{sgd}{SGD}{Stochastic Gradient Descent}
+\newacronym{rlhf}{RLHF}{Reinforcement Learning from Human Feedback}
+
+%% ==================  ヘッダー・フッター設定  ========================
+\pagestyle{fancy}
+\fancyhf{}                                                  % 初期化
+\renewcommand{\headrulewidth}{0.4pt}                        % ヘッダ罫線 0.4pt
+\fancyhead[L]{\small 72603857\quad 鈴木 真理}               % 左：学籍番号・氏名
+\fancyhead[R]{\small 慶應義塾大学 総合政策学部\quad 1年}    % 右：所属・学年
+\fancyfoot[C]{\thepage\ / \pageref{LastPage}}               % フッタ中央：ページ番号
+
+% ---- タイトルページ (plain) にも同じヘッダ・フッタを強制適用 ----
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \renewcommand{\headrulewidth}{0.4pt}%
+    \fancyhead[L]{\small 72603857\quad 鈴木 真理}%
+    \fancyhead[R]{\small 慶應義塾大学 総合政策学部\quad 1年}%
+    \fancyfoot[C]{\thepage\ / \pageref{LastPage}}%
+}
+
+%% ====================  コードスタイル定義  ==========================
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\scriptsize,
+    breakatwhitespace=false, breaklines=true,
+    captionpos=b, keepspaces=true,
+    numbers=left, numbersep=4pt,
+    showspaces=false, showstringspaces=false, showtabs=false,
+    tabsize=2, frame=single,
+    aboveskip=3pt, belowskip=1pt
+}
+\lstset{style=mystyle}
+
+%% ==================  グローバルレイアウト微調整  ====================
+\newcommand{\ns}{\textrm{\scriptsize n.s.}}
+
+\setlength{\parskip}{0.5pt plus 0.3pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\floatsep}{2pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
+\setlength{\intextsep}{2pt plus 1pt minus 1pt}
+\setlist{nosep, leftmargin=1.5em, topsep=0pt, partopsep=0pt}
+\captionsetup{font=small, skip=1pt}
+
+%% ============  セクション見出しのバランス再定義  ====================
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+    {0.5\Cvs \@plus.15\Cvs \@minus.05\Cvs}%
+    {0.1\Cvs \@plus.05\Cvs}%
+    {\normalfont\large\headfont\raggedright}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+    {0.3\Cvs \@plus.1\Cvs \@minus.05\Cvs}%
+    {0.05\Cvs \@plus.03\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+    {0.2\Cvs \@plus.08\Cvs \@minus.03\Cvs}%
+    {0.03\Cvs \@plus.02\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}}
+\makeatother
+
+%% ======================  便利マクロ  ================================
+\newcommand{\point}[2]{\noindent\textbf{#1:} #2 \par}
+\newcommand{\hypo}[1]{\item \textit{#1}}
+
+%% ============  Tcolorbox カスタムスタイル定義  ======================
+\newtcolorbox{insightbox}[1][]{%
+    enhanced, breakable,
+    colback=blue!3, colframe=blue!60!black,
+    coltitle=white, fonttitle=\bfseries,
+    title={Important Insight},
+    boxrule=0.8pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    #1
+}
+
+\newtcolorbox{warningbox}[1][]{%
+    enhanced, breakable,
+    colback=red!3, colframe=red!60!black,
+    coltitle=white, fonttitle=\bfseries,
+    title={Warning},
+    boxrule=0.8pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    #1
+}
+
+\newtcolorbox{definitionbox}[1][]{%
+    enhanced, breakable,
+    colback=green!3, colframe=green!50!black,
+    coltitle=white, fonttitle=\bfseries,
+    title={Definition},
+    boxrule=0.8pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    #1
+}
+
+%% ====================  タイトル情報  ================================
+%%  ★ 論文ごとに下記を書き換える ★
+\title{%
+    \vspace{-10mm}%
+    論文タイトルをここに入力\\
+    \normalsize サブタイトル（任意）\vspace{1mm}\\
+    \normalsize キーワード: 深層学習, 最適化, 自然言語処理 \quad By 鈴木真理\vspace{1mm}%
+}
+\author{\small 慶應義塾大学 総合政策学部\quad 学籍番号: 72603857\quad 鈴木 真理}
+\date{\small \today}
+
+%% =====================================================================
+%%                        本  文  開  始
+%% =====================================================================
+\begin{document}
+\maketitle
+
+\vspace{-7mm}
+
+\begin{abstract}\small\setlength{\parskip}{0pt}
+    本テンプレートは，\LaTeX\ で使用頻度の高い学術的要素——
+    数式・図・表・リスト・ソースコード・参考文献——に加え，
+    TikZ・Algorithm2e・Tcolorbox・Cleveref・Glossaries の
+    「五つの秘宝」を統合した決定版ボイラープレートである．
+    コンパイルするだけで各要素の組版結果を網羅的に確認でき，
+    コピー\&ペーストで新しい論文へ即座に転用できるよう設計した．
+\end{abstract}
+
+
+%% =====================================================================
+%%  § 1  数式 (amsmath)
+%% =====================================================================
+\section{数式のサンプル（amsmathパッケージ）}
+\label{sec:math}
+
+\subsection{ガウス積分}
+ガウス積分は確率論・統計学・物理学の基礎をなす重要な積分公式である~\cite{bishop2006pattern}．
+
+\begin{equation}
+    \int_{-\infty}^{\infty} e^{-x^{2}} \, dx = \sqrt{\pi}
+    \label{eq:gauss}
+\end{equation}
+
+\cref{eq:gauss} は正規分布の正規化定数の導出に直接的に用いられる．
+
+\subsection{勾配降下法の更新則}
+\gls{ml}における最も基本的な最適化アルゴリズムである\gls{sgd}は，
+パラメータ $\bm{\theta}$ を以下のように逐次更新する~\cite{ruder2016sgd}：
+
+\begin{equation}
+    \bm{\theta}^{(t+1)}
+    = \bm{\theta}^{(t)}
+    - \eta \, \nabla_{\bm{\theta}} \mathcal{L}\!\left(\bm{\theta}^{(t)}\right)
+    \label{eq:gd}
+\end{equation}
+
+ここで $\eta > 0$ は学習率，$\mathcal{L}$ は損失関数である．
+\cref{eq:gd} は \gls{sgd} の基本形である．
+
+\subsection{ベイズの定理（aligned 環境）}
+
+\begin{equation}
+    \begin{aligned}
+        P(A \mid B)
+         & = \frac{P(B \mid A) \, P(A)}{P(B)} \\[6pt]
+         & = \frac{P(B \mid A) \, P(A)}       %
+        {\displaystyle \sum_{i} P(B \mid A_{i}) \, P(A_{i})}
+    \end{aligned}
+    \label{eq:bayes}
+\end{equation}
+
+\subsection{行列表記}
+
+\begin{equation}
+    \bm{A} \bm{x} = \bm{b}
+    \quad\Longleftrightarrow\quad
+    \begin{pmatrix}
+        a_{11} & a_{12} & \cdots & a_{1n} \\
+        a_{21} & a_{22} & \cdots & a_{2n} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        a_{m1} & a_{m2} & \cdots & a_{mn}
+    \end{pmatrix}
+    \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}
+    =
+    \begin{pmatrix} b_1 \\ b_2 \\ \vdots \\ b_m \end{pmatrix}
+    \label{eq:matrix}
+\end{equation}
+
+
+%% =====================================================================
+%%  § 2  図の配置テンプレート
+%% =====================================================================
+\section{図（Figure）の配置テンプレート}
+\label{sec:figure}
+
+\subsection{2枚並び（minipage）}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.47\textwidth}
+        \centering
+        \rule{\textwidth}{4cm}%
+        % \includegraphics[width=\textwidth]{../Assets/image_left.png}
+        \caption{左側の図のキャプション}
+        \label{fig:two-left}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.47\textwidth}
+        \centering
+        \rule{\textwidth}{4cm}%
+        % \includegraphics[width=\textwidth]{../Assets/image_right.png}
+        \caption{右側の図のキャプション}
+        \label{fig:two-right}
+    \end{minipage}
+\end{figure}
+
+\cref{fig:two-left} と\cref{fig:two-right} はそれぞれ独立したキャプションとラベルを持つ．
+
+\subsection{3枚並び（minipage）}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.30\textwidth}
+        \centering
+        \rule{\textwidth}{3cm}%
+        % \includegraphics[width=\textwidth]{../Assets/fig_a.png}
+        \caption{図A}
+        \label{fig:three-a}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.30\textwidth}
+        \centering
+        \rule{\textwidth}{3cm}%
+        % \includegraphics[width=\textwidth]{../Assets/fig_b.png}
+        \caption{図B}
+        \label{fig:three-b}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.30\textwidth}
+        \centering
+        \rule{\textwidth}{3cm}%
+        % \includegraphics[width=\textwidth]{../Assets/fig_c.png}
+        \caption{図C}
+        \label{fig:three-c}
+    \end{minipage}
+\end{figure}
+
+
+%% =====================================================================
+%%  § 3  表のテンプレート
+%% =====================================================================
+\section{表（Table）のテンプレート — booktabs}
+\label{sec:table}
+
+\subsection{基本的な学術誌水準の表}
+
+\begin{table}[H]
+    \centering
+    \caption{各手法の性能比較（精度・再現率・F1スコア）}
+    \label{tab:performance}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{手法}   & \textbf{Precision} & \textbf{Recall} & \textbf{F1}   \\
+        \midrule
+        ロジスティック回帰     & 0.82               & 0.79            & 0.80          \\
+        ランダムフォレスト     & 0.88               & 0.85            & 0.86          \\
+        勾配ブースティング     & 0.91               & 0.89            & 0.90          \\
+        \textbf{提案手法} & \textbf{0.94}      & \textbf{0.92}   & \textbf{0.93} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\cref{tab:performance} に示すように，提案手法が全指標で他手法を上回っている．
+
+\subsection{tabularx を用いた可変幅テーブル}
+
+\begin{table}[H]
+    \centering
+    \caption{分析手法の特徴比較}
+    \label{tab:comparison}
+    \begin{tabularx}{\textwidth}{lXX}
+        \toprule
+        \textbf{観点} & \textbf{従来手法}        & \textbf{提案手法}     \\
+        \midrule
+        計算量         & $O(n^3)$ で大規模データに不向き & $O(n \log n)$ に改善 \\
+        解釈性         & ブラックボックス型            & SHAP値により局所的説明が可能  \\
+        汎化性能        & 過学習しやすい              & 正則化により安定          \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+
+%% =====================================================================
+%%  § 4  リスト（enumitem）
+%% =====================================================================
+\section{リストのサンプル（enumitemパッケージ）}
+\label{sec:list}
+
+\subsection{箇条書き（itemize）}
+
+\begin{itemize}
+    \item データの前処理（欠損値補完・外れ値除去）
+    \item 特徴量エンジニアリング（ワンホットエンコーディング・標準化）
+    \item モデルの学習と交差検証による評価
+    \item ハイパーパラメータチューニング（グリッドサーチ / ベイズ最適化）
+\end{itemize}
+
+\subsection{番号付きリスト（enumerate）}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=2em]
+    \item 研究課題（Research Question）を明確に定義する．
+    \item 先行研究を体系的にレビューし，知識のギャップを特定する．
+    \item 仮説を設定し，検証可能な形式にリファインする．
+    \item データ収集の方法論を設計し，IRB承認を得る．
+    \item 統計分析を実施し，結果を可視化する．
+\end{enumerate}
+
+\subsection{hypo マクロを用いた仮説リスト}
+
+\begin{itemize}[nosep]
+    \hypo{プログラミングスキルと数学スコアには正の相関がある}
+    \hypo{文系学部と理系学部の間には有意なスキル差が存在する}
+    \hypo{自己評価と客観テストの間には系統的な乖離がみられる}
+\end{itemize}
+
+
+%% =====================================================================
+%%  § 5  ソースコード（listings）
+%% =====================================================================
+\section{ソースコードの表示（listingsパッケージ）}
+\label{sec:code}
+
+\subsection{Pythonコード：ピアソン相関係数の実装}
+
+\begin{lstlisting}[language=Python, caption={NumPyを用いたピアソン相関係数の計算}, label={lst:pearson}]
+import numpy as np
+
+def pearson_correlation(x: np.ndarray, y: np.ndarray) -> float:
+    """Calculate Pearson correlation coefficient from scratch."""
+    n = len(x)
+    mean_x, mean_y = np.mean(x), np.mean(y)
+    dx, dy = x - mean_x, y - mean_y
+
+    numerator   = np.sum(dx * dy)
+    denominator = np.sqrt(np.sum(dx**2) * np.sum(dy**2))
+
+    if denominator == 0:
+        return 0.0
+    return numerator / denominator
+
+# --- Usage Example ---
+scores_python = np.array([3, 4, 2, 5, 1, 4, 3, 5, 2, 4])
+scores_sql    = np.array([2, 3, 1, 5, 1, 4, 2, 4, 3, 3])
+
+r = pearson_correlation(scores_python, scores_sql)
+print(f"Pearson r = {r:.4f}")
+\end{lstlisting}
+
+
+%% =====================================================================
+%%  § 6  秘宝1: TikZ — ニューラルネットワーク描画
+%% =====================================================================
+\section{秘宝1: TikZによるニューラルネットワーク描画}
+\label{sec:tikz}
+
+TikZ を用いて，入力層・隠れ層・出力層からなる全結合ニューラルネットワークを描画する．
+深層学習~\cite{lecun2015deep}の基礎であるフィードフォワードネットワークの構造を視覚化した例を示す．
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+            neuron/.style={circle, draw=black!80, fill=blue!15,
+                    minimum size=20pt, inner sep=0pt, font=\scriptsize},
+            input/.style={neuron, fill=green!20},
+            hidden/.style={neuron, fill=blue!15},
+            output/.style={neuron, fill=red!20},
+            conn/.style={->, >=stealth, thin, black!60},
+            layer label/.style={font=\small\bfseries, align=center},
+        ]
+        % --- 入力層 (4 neurons) ---
+        \foreach \i in {1,...,4} {
+                \node[input] (I\i) at (0, -\i*1.2+3) {$x_{\i}$};
+            }
+        % --- 隠れ層1 (5 neurons) ---
+        \foreach \j in {1,...,5} {
+                \node[hidden] (H1\j) at (2.5, -\j*1.2+3.6) {$h_{\j}^{(1)}$};
+            }
+        % --- 隠れ層2 (5 neurons) ---
+        \foreach \k in {1,...,5} {
+                \node[hidden] (H2\k) at (5.0, -\k*1.2+3.6) {$h_{\k}^{(2)}$};
+            }
+        % --- 出力層 (2 neurons) ---
+        \foreach \l in {1,...,2} {
+                \node[output] (O\l) at (7.5, -\l*1.2+1.8) {$y_{\l}$};
+            }
+
+        % --- 結合線: 入力 → 隠れ1 ---
+        \foreach \i in {1,...,4} {
+                \foreach \j in {1,...,5} {
+                        \draw[conn] (I\i) -- (H1\j);
+                    }
+            }
+        % --- 結合線: 隠れ1 → 隠れ2 ---
+        \foreach \j in {1,...,5} {
+                \foreach \k in {1,...,5} {
+                        \draw[conn] (H1\j) -- (H2\k);
+                    }
+            }
+        % --- 結合線: 隠れ2 → 出力 ---
+        \foreach \k in {1,...,5} {
+                \foreach \l in {1,...,2} {
+                        \draw[conn] (H2\k) -- (O\l);
+                    }
+            }
+
+        % --- レイヤーラベル ---
+        \node[layer label] at (0, 2.8) {入力層\\Input};
+        \node[layer label] at (2.5, 3.4) {隠れ層1\\Hidden 1};
+        \node[layer label] at (5.0, 3.4) {隠れ層2\\Hidden 2};
+        \node[layer label] at (7.5, 2.0) {出力層\\Output};
+    \end{tikzpicture}
+    \caption{TikZで描画した全結合ニューラルネットワーク（4--5--5--2）}
+    \label{fig:nn}
+\end{figure}
+
+\cref{fig:nn} は4入力・2出力のフィードフォワードネットワークを示す．
+\gls{cnn}や\gls{rnn}などのアーキテクチャもTikZで描画可能である．
+
+
+%% =====================================================================
+%%  § 7  秘宝2: Algorithm2e — 擬似コード
+%% =====================================================================
+\section{秘宝2: Algorithm2eによる擬似コード}
+\label{sec:algorithm}
+
+勾配降下法~\cite{ruder2016sgd}の擬似コードを\texttt{algorithm2e}パッケージで記述する．
+
+\begin{algorithm}[H]
+    \caption{Gradient Descent（勾配降下法）}
+    \label{alg:gd}
+    \KwIn{Training data $\{(\bm{x}_i, y_i)\}_{i=1}^{N}$,
+        learning rate $\eta$, max iterations $T$}
+    \KwOut{Optimized parameters $\bm{\theta}^*$}
+    \BlankLine
+    Initialize $\bm{\theta}^{(0)}$ randomly\;
+    \For{$t = 0$ \KwTo $T - 1$}{
+        Compute predictions: $\hat{y}_i = f(\bm{x}_i; \bm{\theta}^{(t)})$
+        \quad $\forall\, i$\;
+        Compute loss:
+        $\mathcal{L} = \frac{1}{N}\sum_{i=1}^{N}
+            \ell\!\left(y_i,\, \hat{y}_i\right)$\;
+        Compute gradient: $\bm{g} = \nabla_{\bm{\theta}} \mathcal{L}$\;
+        Update parameters: $\bm{\theta}^{(t+1)}
+            \leftarrow \bm{\theta}^{(t)} - \eta\,\bm{g}$\;
+        \If{$\|\bm{g}\| < \varepsilon$}{
+            \textbf{break} \tcp*{convergence reached}
+        }
+    }
+    \Return{$\bm{\theta}^{(T)}$}\;
+\end{algorithm}
+
+\cref{alg:gd} に示した更新則は\cref{eq:gd}と対応する．
+Adamなどの適応学習率法への拡張も同様に記述可能である．
+
+
+%% =====================================================================
+%%  § 8  秘宝3: Tcolorbox — 装飾枠
+%% =====================================================================
+\section{秘宝3: Tcolorboxによる装飾枠}
+\label{sec:tcolorbox}
+
+学術論文において重要な知見や注意事項を読者に伝えるには，
+視覚的に目立つ装飾枠が有効である．
+
+\begin{insightbox}
+    \gls{llm}は開発環境の政治的・文化的バイアスを反映した
+    「確率的ステートマシン」であり，中立的な情報源ではない．
+    同一の問いに対しても，モデルの出身国によって
+    全く異なるナラティブが構築される~\cite{vaswani2017attention}．
+\end{insightbox}
+
+\begin{warningbox}
+    \texttt{hyperref} パッケージは必ず \texttt{cleveref}
+    よりも\textbf{前}に読み込むこと．
+    順序を誤ると参照リンクが正しく生成されない．
+\end{warningbox}
+
+\begin{definitionbox}
+    \textbf{\gls{rag}}とは，外部知識ベースからの検索結果を
+    \gls{llm}の入力に付加することで，
+    幻覚（Hallucination）を抑制し事実に基づく回答を生成する
+    フレームワークである~\cite{lewis2020rag}．
+\end{definitionbox}
+
+
+%% =====================================================================
+%%  § 9  秘宝4: Cleveref — 自動ラベル参照
+%% =====================================================================
+\section{秘宝4: Cleverefによる自動ラベル参照}
+\label{sec:cleveref}
+
+\texttt{cleveref} パッケージの \verb|\cref| コマンドは，
+参照先の種類（図・表・式・アルゴリズム）を自動判定し，
+日本語ラベルを付加する：
+
+\begin{itemize}
+    \item 数式参照: \cref{eq:gauss}，\cref{eq:gd}，\cref{eq:bayes}
+    \item 表参照: \cref{tab:performance}，\cref{tab:comparison}
+    \item 図参照: \cref{fig:two-left}，\cref{fig:nn}
+    \item アルゴリズム参照: \cref{alg:gd}
+    \item セクション参照: \cref{sec:math}，\cref{sec:tikz}
+    \item 複数同時参照: \cref{eq:gauss,eq:gd,eq:bayes} を比較せよ
+\end{itemize}
+
+
+%% =====================================================================
+%%  § 10  秘宝5: Glossaries — 略語管理
+%% =====================================================================
+\section{秘宝5: 略語自動管理システム}
+\label{sec:glossaries}
+
+本テンプレートでは，略語が\textbf{初回登場時にフルスペル}，
+2回目以降は略語のみで自動表示されるカスタムマクロを実装している．
+
+近年の\gls{nlp}分野では，\gls{llm}が急速に発展している．
+\gls{gan}~\cite{goodfellow2014generative}は画像生成に革命をもたらし，
+\gls{rag}~\cite{lewis2020rag}は\gls{llm}の幻覚問題に対処するために提案された．
+\gls{rlhf}は\gls{llm}の出力品質を人間のフィードバックに基づいて向上させる手法である．
+
+上記の文では，2回目に登場した \gls{llm} や \gls{rag} が
+自動的に略語のみで表示されていることを確認されたい．
+
+\printacronyms
+
+
+%% =====================================================================
+%%  § 11  段組み（multicol）
+%% =====================================================================
+\section{段組みレイアウト（multicolパッケージ）}
+\label{sec:multicol}
+
+\begin{multicols}{2}
+    \noindent\textbf{左カラム: 定量分析}
+
+    定量分析では数値データに基づく統計的検定を実施する．
+    具体的には，$t$検定・$\chi^2$検定・分散分析（ANOVA）などを用いて
+    群間差の有意性を評価する．
+    サンプルサイズの確保と効果量の報告が不可欠である．
+
+    \columnbreak
+
+    \noindent\textbf{右カラム: 定性分析}
+
+    定性分析ではインタビューやフィールドノートを対象に
+    グラウンデッド・セオリー・アプローチや
+    主題分析（Thematic Analysis）を適用する．
+    コーディングの一貫性を確保するため，
+    複数のコーダーによる信頼性検証が推奨される．
+\end{multicols}
+
+
+%% =====================================================================
+%%  § 12  便利マクロ + 相互参照デモ
+%% =====================================================================
+\section{便利マクロの使用例}
+\label{sec:macro}
+
+\point{実験結果の要約}{%
+    提案手法はベースラインに比べ F1 スコアで +7.3\,pp の改善を達成した
+    （\cref{tab:performance}）．
+    特に Recall の向上が顕著であり，偽陰性の削減に大きく寄与している．
+}
+
+\point{今後の展望}{%
+    本研究ではテキストデータのみを対象としたが，
+    マルチモーダル（画像＋テキスト）への拡張により
+    さらなる精度向上が見込まれる．
+    \gls{rag}~\cite{lewis2020rag}の導入も有望なアプローチである．
+}
+
+
+%% =====================================================================
+%%  § 13  結論
+%% =====================================================================
+\section{結論}
+\label{sec:conclusion}
+
+本テンプレートでは，
+数式（\cref{sec:math}），
+図（\cref{sec:figure}），
+表（\cref{sec:table}），
+リスト（\cref{sec:list}），
+ソースコード（\cref{sec:code}），
+TikZ（\cref{sec:tikz}），
+Algorithm2e（\cref{sec:algorithm}），
+Tcolorbox（\cref{sec:tcolorbox}），
+Cleveref（\cref{sec:cleveref}），
+Glossaries（\cref{sec:glossaries}），
+段組み（\cref{sec:multicol}），
+便利マクロ（\cref{sec:macro}）
+の12カテゴリにわたる組版要素を実演した．
+
+このファイルをコピーし，タイトル・要旨・本文を書き換えるだけで，
+北米大学院水準の学術論文・レポートを即座に執筆開始できる．
+
+
+%% =====================================================================
+%%  参考文献
+%% =====================================================================
+\printbibliography[title=参考文献]
+
+\end{document}
