@@ -64,6 +64,7 @@
 
 \begin{document}
 \maketitle
+
 \vspace{-7mm}
 
 \begin{abstract}\small\setlength{\parskip}{0pt}
@@ -104,21 +105,18 @@
     \begin{minipage}{0.42\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../Assets/h1_correlation_heatmap.png}
-        %\caption{\footnotesize 相関行列(独自実装)}
         \label{fig:heatmap}
     \end{minipage}
     \hfill
     \begin{minipage}{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../Assets/h2_faculty_boxplot.png}
-        %\caption{\footnotesize 学部別スキル分布}
         \label{fig:boxplot}
     \end{minipage}
     \hfill
     \begin{minipage}{0.42\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../Assets/h3_gender_radar.png}
-        %\caption{\footnotesize 性別スキル偏差}
         \label{fig:radar}
     \end{minipage}
 \end{figure}
@@ -128,10 +126,12 @@
     \begin{itemize}[nosep]
         \hypo{Python経験者の割合が高い}
         \hypo{学部間のスキル差がない}
+        \hypo{未経験から初心者が多数を占める}
     \end{itemize}
+    上記より，データドリブンの講義を受ける学生は全体を通してスキルが未発達であることが示唆される．
 }
 
-\noindent\textbf{2. なぜ「つまらない」のか（考察）：}
+\noindent\textbf{2. なぜ「つまらない」のか / 何が欠けているのか：}
 \begin{itemize}
     \item \textbf{情報不足:}学生の学修環境や動機などの要素が考慮されていないため，スキルの背景にある要因を分析できない．
     \item \textbf{客観性がない:}本調査は主観的な評価に偏っているため，分析結果が個人の感覚に依存しやすく信憑性に欠ける．
@@ -140,13 +140,13 @@
 \end{itemize}
 
 \section{意味合い（Insight）を出すための新たな問い}
-現状を把握するだけの分析から脱却するため，以下の問いを設定する．
+現状を把握するだけの分析から脱却するため，以下の問いを設定するべきであると考える．
 \begin{enumerate}
-    \item \textbf{クラスター特性：} 個人によって
-    \item \textbf{潜在的脱落者の予測：} 数学への苦手意識（1-2）とプログラミング経験の低さが結合している層に対し，どのタイミングで介入（スキャフォールディング）すべきか？
+    \item \textbf{『自己評価の過小・過大評価』を外部指標で補正した際、真の潜在能力分布はどう変化するか？}
+    \item \textbf{『学修環境の質』がスキル習得に与える影響はどの程度か？}
 \end{enumerate}
 
 \section{結論：この課題で本当に答えるべき問い}
-
+本課題で答えるべき問いは，「履修者アンケートの定量分析において、どのような分析手法や視点を取り入れることで、より深い洞察（Insight）を得ることができるか？」であると考える．単なる記述統計や相関分析に留まらず、情報の不足やバイアスを補正し、学生の学修環境や動機などの要素を考慮した分析手法を模索することが重要である．
 
 \end{document}
