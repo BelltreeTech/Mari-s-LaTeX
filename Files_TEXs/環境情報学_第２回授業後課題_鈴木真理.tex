@@ -1,0 +1,261 @@
+
+\documentclass[uplatex, dvipdfmx, a4paper, 10pt]{jsarticle}
+
+%% =========================  パッケージ  =============================
+\usepackage[top=15truemm,bottom=15truemm,left=18truemm,right=18truemm]{geometry}
+\usepackage{amsmath, amssymb, mathtools, bm}         % 数式
+\usepackage[dvipdfmx]{graphicx}                      % 画像
+\usepackage{float}                                    % [H] 指定
+\usepackage{booktabs}                                % 学術誌水準の表
+\usepackage{caption}                                 % キャプション微調整
+\usepackage{listings}                                % ソースコード
+\usepackage{xcolor}                                  % 色定義
+\usepackage{tabularx}                                % 可変幅テーブル
+\usepackage{enumitem}                                % リスト微調整
+\usepackage{multicol}                                % 段組み
+\usepackage{lastpage}                                % 総ページ数参照
+\usepackage{fancyhdr}                                % ヘッダー・フッター
+
+\usepackage{tikz}                                    % 秘宝1: 図形描画
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e} % 秘宝2: 擬似コード
+\usepackage{tcolorbox}                               % 秘宝3: 装飾枠
+\tcbuselibrary{skins, breakable}
+
+%% ---- 参考文献管理 (BibLaTeX + Biber) ----
+\usepackage[backend=biber, style=numeric-comp, sorting=none,
+            maxbibnames=99]{biblatex}
+\addbibresource{references.bib}
+
+%% ---- Hyperref----
+\usepackage[dvipdfmx, bookmarks=true,
+            setpagesize=false,
+            colorlinks=true, linkcolor=black,
+            urlcolor=blue, citecolor=black]{hyperref}
+\usepackage{pxjahyper}                               % hyperref 日本語対応
+
+\usepackage[nameinlink]{cleveref}
+\crefname{equation}{式}{式}
+\Crefname{equation}{式}{式}
+\crefname{figure}{図}{図}
+\Crefname{figure}{図}{図}
+\crefname{table}{表}{表}
+\Crefname{table}{表}{表}
+\crefname{section}{§}{§}
+\Crefname{section}{§}{§}
+\crefname{listing}{リスト}{リスト}
+\Crefname{listing}{リスト}{リスト}
+\crefname{algocf}{Algorithm}{Algorithm}
+\Crefname{algocf}{Algorithm}{Algorithm}
+
+\crefformat{equation}{式~(#2#1#3)}
+\crefrangeformat{equation}{式~(#3#1#4)–(#5#2#6)}
+\crefmultiformat{equation}{式~(#2#1#3)}{と(#2#1#3)}{, (#2#1#3)}{, (#2#1#3)}
+
+\makeatletter
+\def\@acro@true{T}
+\def\@acro@false{F}
+
+\newcommand{\newacronym}[3]{%
+    \expandafter\def\csname @acro@flag@#1\endcsname{\@acro@false}%
+    \expandafter\def\csname @acro@short@#1\endcsname{#2}%
+    \expandafter\def\csname @acro@long@#1\endcsname{#3}%
+    \g@addto@macro\@acro@list{\@acro@printentry{#1}}%
+}
+\let\@acro@list\@empty
+
+\newcommand{\gls}[1]{%
+    \expandafter\ifx\csname @acro@flag@#1\endcsname\@acro@true
+        \csname @acro@short@#1\endcsname
+    \else
+        \csname @acro@long@#1\endcsname
+        \ (\csname @acro@short@#1\endcsname)%
+        \expandafter\gdef\csname @acro@flag@#1\endcsname{\@acro@true}%
+    \fi
+}
+
+\newcommand{\glsreset}[1]{%
+    \expandafter\gdef\csname @acro@flag@#1\endcsname{\@acro@false}%
+}
+
+\newcommand{\@acro@printentry}[1]{%
+    \csname @acro@short@#1\endcsname &
+    \csname @acro@long@#1\endcsname \\
+}
+\newcommand{\printacronyms}[1][略語一覧]{%
+    \subsection*{#1}%
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{略語} & \textbf{正式名称} \\
+        \midrule
+        \@acro@list
+        \bottomrule
+    \end{tabular}%
+}
+\makeatother
+
+
+\newacronym{llm}{LLM}{Large Language Model}
+\newacronym{rag}{RAG}{Retrieval-Augmented Generation}
+\newacronym{gan}{GAN}{Generative Adversarial Network}
+\newacronym{nlp}{NLP}{Natural Language Processing}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{cnn}{CNN}{Convolutional Neural Network}
+\newacronym{rnn}{RNN}{Recurrent Neural Network}
+\newacronym{sgd}{SGD}{Stochastic Gradient Descent}
+\newacronym{rlhf}{RLHF}{Reinforcement Learning from Human Feedback}
+
+%% ==================  ヘッダー・フッター設定  ========================
+\pagestyle{fancy}
+\fancyhf{}                                                  % 初期化
+\renewcommand{\headrulewidth}{0.4pt}                        % ヘッダ罫線 0.4pt
+\fancyhead[L]{\small 72603857\quad 鈴木 真理}               % 左：学籍番号・氏名
+\fancyhead[R]{\small 慶應義塾大学 総合政策学部\quad 1年}    % 右：所属・学年
+\fancyfoot[C]{\thepage\ / \pageref{LastPage}}               % フッタ中央：ページ番号
+
+% ---- タイトルページ (plain) にも同じヘッダ・フッタを強制適用 ----
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \renewcommand{\headrulewidth}{0.4pt}%
+    \fancyhead[L]{\small 72603857\quad 鈴木 真理}%
+    \fancyhead[R]{\small 慶應義塾大学 総合政策学部\quad 1年}%
+    \fancyfoot[C]{\thepage\ / \pageref{LastPage}}%
+}
+
+%% ====================  コードスタイル定義  ==========================
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\scriptsize,
+    breakatwhitespace=false, breaklines=true,
+    captionpos=b, keepspaces=true,
+    numbers=left, numbersep=4pt,
+    showspaces=false, showstringspaces=false, showtabs=false,
+    tabsize=2, frame=single,
+    aboveskip=3pt, belowskip=1pt
+}
+\lstset{style=mystyle}
+
+%% ==================  グローバルレイアウト微調整  ====================
+\newcommand{\ns}{\textrm{\scriptsize n.s.}}
+
+\setlength{\parskip}{0.5pt plus 0.3pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\floatsep}{2pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
+\setlength{\intextsep}{2pt plus 1pt minus 1pt}
+\setlist{nosep, leftmargin=1.5em, topsep=0pt, partopsep=0pt}
+\captionsetup{font=small, skip=1pt}
+
+%% ============  セクション見出しのバランス再定義  ====================
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+    {0.5\Cvs \@plus.15\Cvs \@minus.05\Cvs}%
+    {0.1\Cvs \@plus.05\Cvs}%
+    {\normalfont\large\headfont\raggedright}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+    {0.3\Cvs \@plus.1\Cvs \@minus.05\Cvs}%
+    {0.05\Cvs \@plus.03\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+    {0.2\Cvs \@plus.08\Cvs \@minus.03\Cvs}%
+    {0.03\Cvs \@plus.02\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}}
+\makeatother
+
+%% ======================  便利マクロ  ================================
+\newcommand{\point}[2]{\noindent\textbf{#1:} #2 \par}
+\newcommand{\hypo}[1]{\item \textit{#1}}
+
+\newcommand{\colsection}[1]{%
+    \par\vspace*{1ex}% 上の余白（剛体）
+    \noindent\textbf{#1}\par\nopagebreak\vspace*{0.5ex}
+    % 下の余白（剛体）と改ページ禁止
+    \noindent\ignorespaces
+}
+
+%% ============  Tcolorbox カスタムスタイル定義  ======================
+\newtcolorbox{insightbox}[1][]{%
+    enhanced, breakable,
+    colback=blue!3, colframe=blue!60!black,
+    coltitle=white, fonttitle=\bfseries,
+    title={Important Insight},
+    boxrule=0.8pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    #1
+}
+
+\newtcolorbox{warningbox}[1][]{%
+    enhanced, breakable,
+    colback=red!3, colframe=red!60!black,
+    coltitle=white, fonttitle=\bfseries,
+    title={Warning},
+    boxrule=0.8pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    #1
+}
+
+\newtcolorbox{definitionbox}[1][]{%
+    enhanced, breakable,
+    colback=green!3, colframe=green!50!black,
+    coltitle=white, fonttitle=\bfseries,
+    title={Definition},
+    boxrule=0.8pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    #1
+}
+
+%% ====================  タイトル情報  ================================
+\title{%
+    \vspace{-10mm}%
+    環境情報学 第２回授業後課題\\
+    \normalsize SFC周辺探検記 \vspace{1mm}\\
+    \normalsize キーワード: 深層学習, 最適化, 自然言語処理 \quad
+}
+\author{\small 慶應義塾大学 総合政策学部\quad 学籍番号: 72603857\quad 鈴木 真理}
+\date{\small \today}
+
+%% =====================================================================
+%%                        本  文  開  始
+%% =====================================================================
+\begin{document}
+\maketitle
+
+\vspace{-7mm}
+
+%% =====================================================================
+%%  § 2  図の配置テンプレート
+%% =====================================================================
+\section{外の心地良い場所たち}
+\label{sec:figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../Assets/EC/環境情報学.png}
+        \caption{左側の図のキャプション}
+        \label{fig:two-left}
+    \end{minipage}
+    \hfill
+\end{figure}
+私はSFC周辺を探索して，心地よい場所を複数見つけた．これらの場所は，自然環境と調和した空間であり，学業やリラックスに最適な環境であると考える．以下では，特に印象的だったスポットをいくつか紹介する．
+
+
+\section{私のおすすめスポット３選}
+\label{sec:multicol}
+
+\begin{itemize}
+    \item \textbf{小さな公園}：\\私はSFC周辺の団地の中にある小さな公園を見つけた．この公園は、緑豊かな木々と花々に囲まれており、ベンチも設置されているため、勉強や読書に最適な場所であった．特に春には桜が満開になり、非常に美しい景色が広がっているのではないだろうか．
+    \item \textbf{慶應看護学部の校舎}：\\私はSFCの外にある慶應看護学部の校舎を訪れた．この校舎は、モダンな建築デザインと広々とした空間が特徴であり、自然光がたっぷりと入るため、非常に快適な環境であった．特に、屋上からの眺めは素晴らしく、周囲の緑や空を一望できるスポットであった．
+    \item \textbf{慶應藤沢イノベーションビレッジ}：\\私はSFCの近くにある慶應藤沢イノベーションビレッジを訪れた．この施設は、最新の技術とデザインが融合した空間であり、研究者が集まる場所であった．特に、屋外スペースには緑が多く、リラックスできる環境が整っており、学業の合間にリフレッシュするのに最適なスポットであった．
+\end{itemize}
+
+\end{document}
