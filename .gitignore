@@ -18,6 +18,7 @@
 *.synctex.gz
 *.toc
 *.xdv
+*.pdf
 
 # --- VS Code & Editor Files ---
 .vscode/
